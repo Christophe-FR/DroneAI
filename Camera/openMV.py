@@ -29,14 +29,14 @@ blue_led  = LED(3)
 ir_led    = LED(4)
 
 #usb.send("Camera initialization...")
-red_led.on()
+blue_led.on()
 usb = USB_VCP()
 sensor.reset()                      # Reset and initialize the sensor.
 sensor.set_pixformat(sensor.RGB565) # Set pixel format to RGB565 (or GRAYSCALE)
 sensor.set_framesize(sensor.QVGA)   # Set frame size to QVGA (320x240)
 sensor.skip_frames(time = 2000)     # Wait for settings take effect
 # sensor.set_gainceiling(16)
-red_led.off()
+blue_led.off()
 usb.send("Done")
 
 contrast=0
@@ -44,17 +44,15 @@ brightness=0
 saturation=0
 vertical_flip=False
 horizontal_flip=False
+watchdog_led=True
+
 while(True):
-    cmd = usb.recv(5, timeout=5000)
+    cmd = usb.recv(5, timeout=1000)
     if (cmd == b'photo'):
         img = sensor.snapshot().compress()
-        clock.tick()                    # Update the FPS clock.
         usb.send(ustruct.pack("<L", img.size()))
         usb.send(img)
-        time.sleep(500)
-        green_led.on()
-        time.sleep(500)
-        green_led.off()
+#        clock.tick()                    # Update the FPS clock.
     elif (cmd == b'frmps'):
         usb.send(clock.fps())
     elif (cmd == b'ledr0'):
@@ -73,6 +71,10 @@ while(True):
         ir_led.off()
     elif (cmd == b'ledi1'):
         ir_led.on()
+    elif (cmd == b'wlede'):
+        watchdog_led=True
+    elif (cmd == b'wledd'):
+        watchdog_led=False
     elif (cmd == b'ctrt+'):
         contrast=max(contrast+1,3)
         sensor.set_contrast(constrast)
@@ -122,3 +124,8 @@ while(True):
     elif (cmd == b'color'):
         sensor.set_hflip(sensor.RGB565)
     else:
+        if watchdog_led:
+            blue_led.on()
+            time.sleep(10)
+            blue_led.off()
+
