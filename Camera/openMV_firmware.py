@@ -11,13 +11,13 @@
 # sp = serial.Serial(port, baudrate=115200, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE,
 #             xonxoff=False, rtscts=False, stopbits=serial.STOPBITS_ONE, timeout=None, dsrdtr=True)
 # sp.setDTR(True) # dsrdtr is ignored on Windows.
-# sp.write("snap")
+# sp.write('snap')
 # sp.flush()
 # size = struct.unpack('<L', sp.read(4))[0]
 # img = sp.read(size)
 # sp.close()
 #
-# with open("img.jpg", "w") as f:
+# with open('img.jpg', 'w') as f:
 #     f.write(img)
 import sensor, image, time, ustruct
 from pyb import USB_VCP
@@ -28,7 +28,7 @@ green_led = LED(2)
 blue_led  = LED(3)
 ir_led    = LED(4)
 
-#usb.send("Camera initialization...")
+#usb.send('Camera initialization...')
 blue_led.on()
 usb = USB_VCP()
 sensor.reset()                      # Reset and initialize the sensor.
@@ -37,7 +37,7 @@ sensor.set_framesize(sensor.QVGA)   # Set frame size to QVGA (320x240)
 sensor.skip_frames(time = 2000)     # Wait for settings take effect
 # sensor.set_gainceiling(16)
 blue_led.off()
-usb.send("Done")
+usb.send('Done')
 
 contrast=0
 brightness=0
@@ -50,7 +50,7 @@ while(True):
     cmd = usb.recv(5, timeout=1000)
     if (cmd == b'photo'):
         img = sensor.snapshot().compress()
-        usb.send(ustruct.pack("<L", img.size()))
+        usb.send(ustruct.pack('<L', img.size()))
         usb.send(img)
 #        clock.tick()                    # Update the FPS clock.
     elif (cmd == b'frmps'):
@@ -98,15 +98,15 @@ while(True):
     elif (cmd == b'heigh'):
         usb.send(sensor.height())
     elif (cmd == b'q4vga'):
-        sensor.set_framesize(sensor.QQQQVGA) #40*30
+        sensor.set_framesize(sensor.QQQQVGA) #40x30
     elif (cmd == b'q3vga'):
-        sensor.set_framesize(sensor.QQQVGA) #80*60
+        sensor.set_framesize(sensor.QQQVGA) #80x60
     elif (cmd == b'q2vga'):
-        sensor.set_framesize(sensor.QQVGA) #160*120
+        sensor.set_framesize(sensor.QQVGA) #160x120
     elif (cmd == b'q1vga'):
-        sensor.set_framesize(sensor.QQVGA) #320*240
+        sensor.set_framesize(sensor.QQVGA) #320x240
     elif (cmd == b'q0vga'):
-        sensor.set_framesize(sensor.QQVGA) #640*480
+        sensor.set_framesize(sensor.QQVGA) #640x480
     elif (cmd == b'vflip'):
         if vertical_flip :
             sensor.set_vflip(True)
