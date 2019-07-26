@@ -35,6 +35,8 @@ sensor.reset()                      # Reset and initialize the sensor.
 sensor.set_pixformat(sensor.RGB565) # Set pixel format to RGB565 (or GRAYSCALE)
 sensor.set_framesize(sensor.QVGA)   # Set frame size to QVGA (320x240)
 sensor.skip_frames(time = 2000)     # Wait for settings take effect
+clock = time.clock()                # Create a clock object to track the FPS.
+
 # sensor.set_gainceiling(16)
 blue_led.off()
 usb.send('Done')
@@ -46,13 +48,14 @@ vertical_flip=False
 horizontal_flip=False
 watchdog_led=True
 
+
 while(True):
-    cmd = usb.recv(5, timeout=1000)
+    cmd = usb.recv(5, timeout=2000)
     if (cmd == b'photo'):
+        clock.tick()
         img = sensor.snapshot().compress()
         usb.send(ustruct.pack('<L', img.size()))
         usb.send(img)
-#        clock.tick()                    # Update the FPS clock.
     elif (cmd == b'frmps'):
         usb.send(clock.fps())
     elif (cmd == b'ledr0'):

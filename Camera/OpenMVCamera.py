@@ -7,6 +7,7 @@ class OpenMVCamera():
 
     def __init__(self, com):
         self.picture = None
+        self.fps = None
         self.size = None
         self.frame = 0
         self.serial = serial.Serial(com, baudrate=115200, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE,
@@ -19,11 +20,14 @@ class OpenMVCamera():
         self.saturation= round(4/7,2)
 
     def photo(self):
+        start_time = time.time()
         self.serial.write(b'photo')
         size = struct.unpack('<L', self.serial.read(4))[0]
         self.serial.flush()
         self.picture = self.serial.read(size)
+        self.fps = 1/(time.time()-start_time)
         self.frame=self.frame+1
+        return self.picture
 
     def format(self,size):
         self.size = size
@@ -121,6 +125,7 @@ class OpenMVCamera():
         self.serial.write(b'wlede')
         self.serial.close()
 
+
 if __name__ == '__main__':
     camera1 = OpenMVCamera('COM3')
     camera1.format('640x480')
@@ -132,7 +137,8 @@ if __name__ == '__main__':
     time.sleep(0.5)
     camera1.flash(b'white', 100)
     time.sleep(0.5)
-    for i in range(10):
+    for i in range(100):
         camera1.photo()
-        camera1.save('my_picture')
+        print(camera1.fps)
+    camera1.save('my_picture')
     camera1.close()
