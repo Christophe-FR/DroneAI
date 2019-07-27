@@ -1,12 +1,15 @@
-import serial
-import time
-import struct
+import cv2
+import numpy as np
+import sys, serial, struct,time
+
 
 
 class OpenMVCamera():
 
-    def __init__(self, com):
+    def __init__(self, name, com):
+        self.name = name
         self.picture = None
+        self.display= True
         self.fps = None
         self.size = None
         self.frame = 0
@@ -25,9 +28,25 @@ class OpenMVCamera():
         size = struct.unpack('<L', self.serial.read(4))[0]
         self.serial.flush()
         self.picture = self.serial.read(size)
-        self.fps = 1/(time.time()-start_time)
-        self.frame=self.frame+1
+        self.fps = 1 / (time.time() - start_time)
+        self.frame = self.frame + 1
+        if self.display:
+            picture = cv2.imdecode(np.frombuffer(self.picture, np.uint8), -1)
+            picture = cv2.putText(picture, str(round(self.fps,1))+'fps',(0,15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0),1)
+            cv2.imshow(self.name, picture)
+
         return self.picture
+
+    def video(self):
+        while True:
+            self.photo()
+            keyCode = cv2.waitKey(30) & 0xff
+            # Stop the program on the ESC key
+            if keyCode == 27:
+                break
+
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
     def format(self,size):
         self.size = size
@@ -127,18 +146,38 @@ class OpenMVCamera():
 
 
 if __name__ == '__main__':
-    camera1 = OpenMVCamera('COM3')
-    camera1.format('640x480')
-    camera1.led(b'green')
-    time.sleep(1)
-    camera1.flash(b'white',100)
-    time.sleep(0.5)
-    camera1.flash(b'white', 100)
-    time.sleep(0.5)
-    camera1.flash(b'white', 100)
-    time.sleep(0.5)
-    for i in range(100):
+    #camera1 = OpenMVCamera('CAMERA 0','/dev/ttyACM0')
+    #camera1.format('640x480')
+    #camera1.led(b'green')
+    #time.sleep(1)
+    #camera1.flash(b'white',100)
+    #time.sleep(0.5)
+    #camera1.flash(b'white', 100)
+    #time.sleep(0.5)
+    #camera1.flash(b'white', 100)
+    #time.sleep(0.5)
+    #for i in range(100):
+    #    camera1.photo()
+    #    print(camera1.fps)
+    #camera1.video()
+    #camera1.save('my_picture')
+    #camera1.close()
+
+    camera0 = OpenMVCamera('CAMERA 0','/dev/ttyACM0')
+    camera1 = OpenMVCamera('CAMERA 1','/dev/ttyACM1')
+    #camera0.format('640x480')
+    #camera1.format('640x480')
+    for i in range(3):
+        camera0.flash(b'pink',100)
+        camera1.flash(b'green',100)
+    while True:
+        camera0.photo()
         camera1.photo()
-        print(camera1.fps)
-    camera1.save('my_picture')
+        keyCode = cv2.waitKey(30) & 0xff
+        # Stop the program on the ESC key
+        if keyCode == 27:
+            break
+
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
     camera1.close()
