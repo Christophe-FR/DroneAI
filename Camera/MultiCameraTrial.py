@@ -1,4 +1,4 @@
-import OpenMVCamera
+import OpenMVCamera as MVcam
 
-camera1=OpenMVamera.OpenMVcamera('CAMERA 0,'/dev/ttyACM0')
+camera1=MVcam.OpenMVcamera('CAMERA 1','/dev/ttyACM1')
 

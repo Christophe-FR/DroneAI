@@ -2,10 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="883db44f-0f36-4824-acbc-7b2752db3ebe" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Camera/MultiCameraTrial.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Camera/OpenMVCamera.py" beforeDir="false" afterPath="$PROJECT_DIR$/Camera/OpenMVCamera.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Camera/camera.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Camera/openMVFirmware.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Camera/MultiCameraTrial.py" beforeDir="false" afterPath="$PROJECT_DIR$/Camera/MultiCameraTrial.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -15,20 +12,20 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Camera/MultiCameraTrial.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="30">
-              <caret line="2" column="32" selection-start-line="2" selection-start-column="19" selection-end-line="2" selection-end-column="32" />
+              <caret line="2" column="51" selection-start-line="2" selection-start-column="51" selection-end-line="2" selection-end-column="51" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Camera/OpenMVCamera.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="395">
-              <caret line="160" column="27" lean-forward="true" selection-start-line="160" selection-start-column="27" selection-end-line="160" selection-end-column="27" />
+            <state relative-caret-position="455">
+              <caret line="158" column="25" lean-forward="true" selection-start-line="158" selection-start-column="25" selection-end-line="158" selection-end-column="25" />
             </state>
           </provider>
         </entry>
@@ -50,8 +47,8 @@
       <list>
         <option value="$PROJECT_DIR$/Camera/__init__.py" />
         <option value="$PROJECT_DIR$/Camera/OpenMV.py" />
-        <option value="$PROJECT_DIR$/Camera/MultiCameraTrial.py" />
         <option value="$PROJECT_DIR$/Camera/OpenMVCamera.py" />
+        <option value="$PROJECT_DIR$/Camera/MultiCameraTrial.py" />
       </list>
     </option>
   </component>
@@ -114,7 +111,7 @@
     </option>
   </component>
   <component name="RunManager">
-    <configuration name="OpenMVCamera" type="PythonConfigurationType" factoryName="Python">
+    <configuration name="MultiCamera" type="PythonConfigurationType" factoryName="Python">
       <module name="GIT-Christophe-FR" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -147,6 +144,14 @@
       <option name="presentableId" value="Default" />
       <updated>1562779221235</updated>
     </task>
+    <task id="LOCAL-00001" summary="JEtson Nano camera update">
+      <created>1564240981446</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1564240981447</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -171,21 +176,25 @@
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
     </layout>
   </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="JEtson Nano camera update" />
+    <option name="LAST_COMMIT_MESSAGE" value="JEtson Nano camera update" />
+  </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/usb_trial.py" />
     <entry file="file://$PROJECT_DIR$/Camera/__init__.py" />
     <entry file="file://$PROJECT_DIR$/Camera/OpenMV.py" />
-    <entry file="file://$PROJECT_DIR$/Camera/OpenMVCamera.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="395">
-          <caret line="160" column="27" lean-forward="true" selection-start-line="160" selection-start-column="27" selection-end-line="160" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Camera/MultiCameraTrial.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="30">
-          <caret line="2" column="32" selection-start-line="2" selection-start-column="19" selection-end-line="2" selection-end-column="32" />
+          <caret line="2" column="51" selection-start-line="2" selection-start-column="51" selection-end-line="2" selection-end-column="51" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Camera/OpenMVCamera.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="455">
+          <caret line="158" column="25" lean-forward="true" selection-start-line="158" selection-start-column="25" selection-end-line="158" selection-end-column="25" />
         </state>
       </provider>
     </entry>
