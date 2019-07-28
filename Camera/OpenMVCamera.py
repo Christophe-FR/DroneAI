@@ -9,10 +9,13 @@ class OpenMVCamera():
     def __init__(self, name, com):
         self.name = name
         self.picture = None
-        self.display= True
+        self.time = time.time()
+        self.frame = 0
+
+        self.display = True
         self.fps = None
         self.size = None
-        self.frame = 0
+
         self.serial = serial.Serial(com, baudrate=115200, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE,
                                     xonxoff=False, rtscts=False, stopbits=serial.STOPBITS_ONE, timeout=None,
                                     dsrdtr=True)
@@ -23,12 +26,13 @@ class OpenMVCamera():
         self.saturation= round(4/7,2)
 
     def photo(self):
-        start_time = time.time()
         self.serial.write(b'photo')
         size = struct.unpack('<L', self.serial.read(4))[0]
         self.serial.flush()
         self.picture = self.serial.read(size)
-        self.fps = 1 / (time.time() - start_time)
+        tic=time.time()
+        self.fps = 1 / (tic - self.time)
+        self.time = tic
         self.frame = self.frame + 1
         if self.display:
             picture = cv2.imdecode(np.frombuffer(self.picture, np.uint8), -1)
@@ -40,7 +44,7 @@ class OpenMVCamera():
     def video(self):
         while True:
             self.photo()
-            keyCode = cv2.waitKey(30) & 0xff
+            keyCode = cv2.waitKey(1) & 0xff
             # Stop the program on the ESC key
             if keyCode == 27:
                 break
@@ -140,14 +144,39 @@ class OpenMVCamera():
             current_code = current_code-1
         self.saturation = round(current_code/7,2)
 
+    def save_burst(self, name, count, period_ms):
+        self.flash(b'yellow', 1000)
+        i=0
+        while i<count:
+            self.photo()
+            print('Do you want to save current picture? y/n')
+            keyCode = cv2.waitKey(period_ms) & 0xff
+            if keyCode==121:
+                self.flash(b'green',10)
+                self.save(name)
+                i = i + 1;
+                print('Picture saved')
+            elif keyCode ==110:
+                self.flash(b'red', 10)
+            elif keyCode == 27:
+                break
+            else:
+                self.flash(b'yellow', 10)
+                self.save(name)
+                print('<!> Time elapsed or Wrong key - Picture saved')
+                i = i + 1;
+        cv2.destroyAllWindows()
+        print('Done')
+        self.flash(b'green',1000)
+
     def close(self):
         self.serial.write(b'wlede')
         self.serial.close()
 
 
 if __name__ == '__main__':
-    #camera1 = OpenMVCamera('CAMERA 0','/dev/ttyACM0')
-    #camera1.format('640x480')
+    camera1 = OpenMVCamera('CAMERA 1','/dev/ttyACM0')
+    camera1.save_burst('calibration',30,5000)
     #camera1.led(b'green')
     #time.sleep(1)
     #camera1.flash(b'white',100)
@@ -161,23 +190,5 @@ if __name__ == '__main__':
     #    print(camera1.fps)
     #camera1.video()
     #camera1.save('my_picture')
-    #camera1.close()
-
-    camera0 = OpenMVCamera('CAMERA 0','/dev/ttyACM0')
-    camera1 = OpenMVCamera('CAMERA 1','/dev/ttyACM1')
-    #camera0.format('640x480')
-    #camera1.format('640x480')
-    for i in range(3):
-        camera0.flash(b'pink',100)
-        camera1.flash(b'green',100)
-    while True:
-        camera0.photo()
-        camera1.photo()
-        keyCode = cv2.waitKey(30) & 0xff
-        # Stop the program on the ESC key
-        if keyCode == 27:
-            break
-
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
     camera1.close()
+
