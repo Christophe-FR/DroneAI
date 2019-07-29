@@ -176,7 +176,7 @@ class OpenMVCamera():
 
 if __name__ == '__main__':
     camera1 = OpenMVCamera('CAMERA 1','/dev/ttyACM0')
-    camera1.save_burst('calibration',30,5000)
+    camera1.save_burst('calibration',10,5000)
     #camera1.led(b'green')
     #time.sleep(1)
     #camera1.flash(b'white',100)

@@ -1,4 +1,4 @@
-
+#https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_calib3d/py_calibration/py_calibration.html
 
 import numpy as np
 import cv2
@@ -18,7 +18,7 @@ imgpoints = [] # 2d points in image plane.
 images = glob.glob('calibration_*.jpg')
 i=0;
 for fname in images:
-    print(i)
+    print('i=',i)
     i=i+1
     img = cv2.imread(fname)
     gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
@@ -39,3 +39,34 @@ for fname in images:
         cv2.waitKey(500)
 
 cv2.destroyAllWindows()
+
+ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1],None,None)
+
+img = cv2.imread('calibration_33.jpg')
+h,  w = img.shape[:2]
+newcameramtx, roi=cv2.getOptimalNewCameraMatrix(mtx,dist,(w,h),1,(w,h))
+
+# undistort
+dst = cv2.undistort(img, mtx, dist, None, newcameramtx)
+
+# crop the image
+x,y,w,h = roi
+dst = dst[y:y+h, x:x+w]
+cv2.imwrite('calibresult.png',dst)
+
+# undistort
+mapx,mapy = cv2.initUndistortRectifyMap(mtx,dist,None,newcameramtx,(w,h),5)
+dst = cv2.remap(img,mapx,mapy,cv2.INTER_LINEAR)
+
+# crop the image
+x,y,w,h = roi
+dst = dst[y:y+h, x:x+w]
+cv2.imwrite('calibresult.png',dst)
+
+mean_error = 0
+for i in range(len(objpoints)):
+    imgpoints2, _ = cv2.projectPoints(objpoints[i], rvecs[i], tvecs[i], mtx, dist)
+    error = cv2.norm(imgpoints[i],imgpoints2, cv2.NORM_L2)/len(imgpoints2)
+    mean_error += error
+
+print("total error: ", mean_error/len(objpoints))
