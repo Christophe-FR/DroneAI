@@ -1,5 +1,5 @@
 import numpy as np
-
+from scipy.optimize import minimize
 
 class quaternion:
     def __init__(self):
@@ -12,7 +12,7 @@ class quaternion:
         self.k = k
 
     def rotdef(self, theta,
-               vector):  # defines a rotation quaternion : rotation of angle theta around the 3D vector (counter-clk)
+               vector):  # defines a rotation quaternion : rotation of angle theta (rad) around the 3D vector (counter-clk)
         vector = vector / np.linalg.norm(vector)
         self.r = np.cos(theta / 2)
         self.i = vector[0] * np.sin(theta / 2)
@@ -83,7 +83,7 @@ def modqtn(qtn1: quaternion):  # quaternion modulus
     return np.linalg.norm([qtn1.r, qtn1.i, qtn1.j, qtn1.k])
 
 def normalizeqtn(qtn: quaternion):
-    return scaleqtn(qtn, 1/modqtn(qtn))
+    return scaleqtn(1/modqtn(qtn),qtn)
 
 
 def qtn2pt(qtn1: quaternion):  # convert back a point quaternion in 3D coordinates
@@ -93,7 +93,7 @@ def qtn2pt(qtn1: quaternion):  # convert back a point quaternion in 3D coordinat
 def qtnrot(qtnr: quaternion, qtnp: quaternion):  # applies a qtnr rotation on a qtnp point
     return multqtn(qtnr, multqtn(qtnp, invqtn(qtnr)))
 
-def rot(angle,vector,point):
+def rot(angle,vector,point): # performs a rotation with quaternion algebra
     qtnr = quaternion()
     qtnp = quaternion()
     qtnr.rotdef(angle, vector)
@@ -122,42 +122,73 @@ def qtn2euler(qtn):  # extract the euler angles describing the rotation
     phi = np.arctan2(2 * (qtn.r * qtn.i + qtn.j * qtn.k), 1 - 2 * (qtn.i ** 2 + qtn.j ** 2))
     return np.rad2deg(psi), np.rad2deg(theta), np.rad2deg(phi)
 
+def basis2qtn(basis1, basis2):
+    return 0
+
 
 if __name__ == "__main__":
-    print("Define a general quaternion from its coordinates, e.g. a=1 + 2i + 3j + 4k")
-    a = quaternion()
-    a.coordef(1, 2, 3, 4)
-    a.show()
-    print("Define a rotation quaternion (angle=90°, vector=[1,1,1])")
-    b = quaternion()
-    b.rotdef(90, [1, 1, 1])
-    b.show()
-    print("Add the two previous quaternions")
-    c = addqtn(a, b)
-    c.show()
-    print("Conjuguate the previous quaternions")
-    c = conjqtn(c)
-    c.show()
-    print("Compute its modulus")
-    print(modqtn(c))
-    print("")
-    angle = 120
-    vector = [2, 0, 0]
-    point = [1, 0, 0]
-    print("Quaternion associated to a ", angle, "° rotation along ", vector, " is:")
-    rotation = quaternion()
-    rotation.rotdef(angle, vector)
-    rotation.show()
-    print("Quaternion associated to point (", point, ") is:")
-    pointq = quaternion()
-    pointq.pointdef(point)
-    pointq.show()
-    print("Apply rotation on point")
-    out = qtn2pt(qtnrot(rotation, pointq))
-    print("Result=", out)
-    print("Equivalent rotation matrix")
-    print(qtn2rotmatrix(rotation))
-    print("Rotation parameters extracted from quaternion")
-    print(qtn2rot(rotation))
-    print("Equivalent euler angles extracted from quaternion [psi,theta,phi]")
-    print(qtn2euler(rotation))
+    #print("Define a general quaternion from its coordinates, e.g. a=1 + 2i + 3j + 4k")
+    #a = quaternion()
+    #a.coordef(1, 2, 3, 4)
+    #a.show()
+    #print("Define a rotation quaternion (angle=90°, vector=[1,1,1])")
+    #b = quaternion()
+    #b.rotdef(90*3.14/180, [1, 1, 1])
+    #b.show()
+    #print("Add the two previous quaternions")
+    #c = addqtn(a, b)
+    #c.show()
+    #print("Conjuguate the previous quaternions")
+    #c = conjqtn(c)
+    #c.show()
+    #print("Compute its modulus")
+    #print(modqtn(c))
+    #print("")
+    #angle = 120
+    #vector = [2, 0, 0]
+    #point = [1, 0, 0]
+    #print("Quaternion associated to a ", angle, "° rotation along ", vector, " is:")
+    #rotation = quaternion()
+    #rotation.rotdef(angle*3.14/180, vector)
+    #rotation.show()
+    #print("Quaternion associated to point (", point, ") is:")
+    #pointq = quaternion()
+    #pointq.pointdef(point)
+    #pointq.show()
+    #print("Apply rotation on point")
+    #out = qtn2pt(qtnrot(rotation, pointq))
+    #print("Result=", out)
+    #print("Equivalent rotation matrix")
+    #print(qtn2rotmatrix(rotation))
+    #print("Rotation parameters extracted from quaternion")
+    #print(qtn2rot(rotation))
+    #print("Equivalent euler angles extracted from quaternion [psi,theta,phi]")
+    #print(qtn2euler(rotation))
+    basis1 = np.array([[1, 0, 0],
+                       [0, 1, 0],
+                       [0, 0, 1]])
+    basis2 = np.array([[0, -1, 0],
+                       [1, 0, 0],
+                       [0, 0, 1]])
+
+    def qtn_square_error(qtn_vect):
+        error = 0
+        qtnr = quaternion()
+        qtnr.coordef(qtn_vect[0], qtn_vect[1], qtn_vect[2], qtn_vect[3])
+        # qtnr.show()
+        # print('Quaternion modulus = ', modqtn(qtnr))
+        qtnp = quaternion()
+        for col in range(3):
+            qtnp.pointdef(basis1[:, col])
+            qtnp = qtnrot(qtnr, qtnp)
+            error = error+np.linalg.norm(qtn2pt(qtnp)-basis2[:, col])**2
+        # print('Error = ', error)
+        return error
+    qtn_coor_sol = minimize(qtn_square_error, np.array([1, 0, 0, 0]))
+    qtn_coor_sol = qtn_coor_sol.x
+    qtn_sol = quaternion()
+    qtn_sol.coordef(qtn_coor_sol[0], qtn_coor_sol[1], qtn_coor_sol[2], qtn_coor_sol[3])
+    qtn_sol = normalizeqtn(qtn_sol)
+    # return qtn_sol
+    qtn_sol.show()
+    print(qtn2rotmatrix(qtn_sol))

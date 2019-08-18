@@ -1,8 +1,7 @@
+import Quaternion as qtn
 import numpy as np
-from mpl_toolkits.mplot3d import Axes3D
-from mpl_toolkits.mplot3d.art3d import Poly3DCollection, Line3DCollection
+from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 import matplotlib.pyplot as plt
-import Quaternion
 
 class DroneState():
     def __init__(self):
@@ -14,51 +13,68 @@ class DroneState():
         self.dangdt=[0, 0, 0]
         self.d2angdt2=[0, 0, 0]
 
+    def x(self):
+        return self.pos[0]
+
+    def y(self):
+        return self.pos[1]
+
+    def z(self):
+        return self.pos[2]
+
+    def psi(self):
+        return self.ang[0]
+
+    def theta(self):
+        return self.ang[1]
+
+    def phi(self):
+        return self.ang[2]
+
     def plot(self):
-        Lx=1
-        Ly=1
-        Lz=0.1
-        coordinates_3D_drone_frame = 0.5*np.array([[-Lx, -Ly, -Lz],
-                           [Lx, -Ly, -Lz],
-                           [Lx, Ly, -Lz],
-                           [-Lx, Ly, -Lz],
-                           [-Lx, -Ly, Lz],
-                           [Lx, -Ly, Lz],
-                           [Lx, Ly, Lz],
-                           [-Lx, Ly, Lz]])
+        Lx=0.5
+        Ly=0.5
+        Lz=0.05
+        drone = np.array([[-Lx, -Ly, -Lz],
+                  [Lx, -Ly, -Lz ],
+                  [Lx, Ly, -Lz],
+                  [-Lx, Ly, -Lz],
+                  [-Lx, -Ly, Lz],
+                  [Lx, -Ly, Lz ],
+                  [Lx, Ly, Lz],
+                  [-Lx, Ly, Lz]])/2
 
-        coordinates_3D_galilean_frame_
+        drone_galilean_frame=np.zeros(drone.shape)
 
-        for coordinates in coordinates_3D_drone_frame:
-            print(coordinates)
-            print('NExt')
+        for idx, point in enumerate(drone):
+            drone_galilean_frame[idx] = qtn.rot(-self.phi(), [1, 0, 0], point)
+            drone_galilean_frame[idx] = qtn.rot(-self.theta(), [0, 1, 0], drone_galilean_frame[idx])
+            drone_galilean_frame[idx] = qtn.rot(-self.psi(), [0, 0, 1], drone_galilean_frame[idx])
 
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
-        ax.set_xlim3d(-10, 10)
-        ax.set_ylim3d(-10, 10)
-        ax.set_zlim3d(-10, 10)
 
         # plot vertices
-        ax.scatter3D(coordinates_3D_drone_frame[:, 0], coordinates_3D_drone_frame[:, 1], coordinates_3D_drone_frame[:, 2])
+        ax.scatter3D(drone_galilean_frame[:, 0], drone_galilean_frame[:, 1], drone_galilean_frame[:, 2],'green')
 
         # list of sides' polygons of figure
-        verts = [[coordinates_3D_drone_frame[0], coordinates_3D_drone_frame[1], coordinates_3D_drone_frame[2], coordinates_3D_drone_frame[3]],
-                 [coordinates_3D_drone_frame[4], coordinates_3D_drone_frame[5], coordinates_3D_drone_frame[6], coordinates_3D_drone_frame[7]],
-                 [coordinates_3D_drone_frame[0], coordinates_3D_drone_frame[1], coordinates_3D_drone_frame[5], coordinates_3D_drone_frame[4]],
-                 [coordinates_3D_drone_frame[2], coordinates_3D_drone_frame[3], coordinates_3D_drone_frame[7], coordinates_3D_drone_frame[6]],
-                 [coordinates_3D_drone_frame[1], coordinates_3D_drone_frame[2], coordinates_3D_drone_frame[6], coordinates_3D_drone_frame[5]],
-                 [coordinates_3D_drone_frame[4], coordinates_3D_drone_frame[7], coordinates_3D_drone_frame[3], coordinates_3D_drone_frame[0]]]
+        verts = [[drone_galilean_frame[0],drone_galilean_frame[1],drone_galilean_frame[2],drone_galilean_frame[3]],
+                [drone_galilean_frame[4],drone_galilean_frame[5],drone_galilean_frame[6],drone_galilean_frame[7]],
+                [drone_galilean_frame[0],drone_galilean_frame[1],drone_galilean_frame[5],drone_galilean_frame[4]],
+                [drone_galilean_frame[2],drone_galilean_frame[3],drone_galilean_frame[7],drone_galilean_frame[6]],
+                [drone_galilean_frame[1],drone_galilean_frame[2],drone_galilean_frame[6],drone_galilean_frame[5]],
+                [drone_galilean_frame[4],drone_galilean_frame[7],drone_galilean_frame[3],drone_galilean_frame[0]]]
 
         # plot sides
-        ax.add_collection3d(Poly3DCollection(verts,facecolors='grey', linewidths=1, edgecolors='k', alpha=.25))
-
+        ax.add_collection3d(Poly3DCollection(verts, facecolors='black', linewidths=1, edgecolors='blue', alpha=.25))
+        ax.set_xlim([-10,10])
+        ax.set_ylim([-10, 10])
+        ax.set_zlim([-10, 10])
         ax.set_xlabel('X')
         ax.set_ylabel('Y')
         ax.set_zlabel('Z')
 
         plt.show()
-
 
 
 if __name__ == '__main__':
