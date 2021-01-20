@@ -487,7 +487,7 @@ def xmlTag(taged_string, select, n_indentation = 0, same_line = False):
         print('ERROR : Unrecognized XML tag selection')
         return  ''
 
-path ='/Users/lutzc/Desktop/nand2tetris/projects/10/Square'
+path ='/Users/lutzc/Desktop/nand2tetris/projects/11/Seven'
 
 # Code to support handling of directory and file.
 # Output: filenameIn/fileOut full paths
